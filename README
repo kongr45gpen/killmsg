@@ -1,0 +1,29 @@
+========================================================================
+    DYNAMIC LINK LIBRARY : killmsg Project Overview
+========================================================================
+
+This is the killmsg. 
+
+----AUTHOR----
+*alezakos
+
+----FEATURES----
+*It shows the message "you killed tanknamehere" every time you gain a kill.
+*It shows message "You killed teammate tanknamehere! Don't do that again!" every time you tk.
+*It shows message "You commited suicide! Don't do that again!" every time you self-destruct.
+
+----INSTALL----
+
+-loadplugin /path/to/plugin/killmsg.so,0
+
+or
+
+/loadplugin /path/to/plugin/killmsg.so,0
+
+Replace 0 with 1 if your server doesn't have the "-tk" option or simply set to 1 if you die when you team-kill.
+
+----CURRENT VERSION----
+1.0
+
+----WEBSITE----
+http://code.google.com/p/killmsg

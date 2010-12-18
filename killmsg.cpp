@@ -16,9 +16,6 @@ public:
   virtual void process ( bz_EventData *eventData );
 
   virtual bool autoDelete ( void ) { return false;} // this will be used for more then one event
-
-
-
 };
 
 killmsg_events killmsg_events;
