@@ -48,31 +48,28 @@ void killmsg_events::process ( bz_EventData *eventData )
       
       if(killerdata&&playerdata)
       {
-	//now we create a message to send to the killer
-	std::string killermessage = std::string("You killed ") +
-	playerdata->callsign.c_str();
-	
-	if(data->killerID==data->playerID && killmyself==1) 
-	{
-		killmyself=0;
-	}
-	else if(data->killerID==data->playerID) 
-	{
-		bz_sendTextMessage(BZ_SERVER,data->killerID,"You commited suicide! Don't do that again!");
-	}
-	else if(killerdata->team==playerdata->team && killerdata->team!=eRogueTeam) {
-		//Here we check whether the team was a team kill
-		if(triti)killmyself=1; //The plugin gets confused if you get killed after a teamkill
-		std::string tkmessage = std::string("You killed teamate ") +
-		playerdata->callsign.c_str() +
-		std::string("!") +
-		std::string(" Don't do that again!") ;
-		bz_sendTextMessage(BZ_SERVER,data->killerID,tkmessage.c_str());
-	}
-	else {
+		//now we create a message to send to the killer
+		std::string killermessage = std::string("You killed ") +
+		playerdata->callsign.c_str();
 		bz_sendTextMessage(BZ_SERVER,data->killerID,killermessage.c_str());
-		//send the messages we created
-	}
+
+			if(data->killerID==data->playerID && killmyself==1) 
+			{
+				killmyself=0;
+			}
+			else if(data->killerID==data->playerID) 
+			{
+				bz_sendTextMessage(BZ_SERVER,data->killerID,"You commited suicide! Don't do that again!");
+			}
+			else if(killerdata->team==playerdata->team && killerdata->team!=eRogueTeam) 
+			{
+				//Here we check whether the team was a team kill
+				if(triti)killmyself=1; //The plugin gets confused if you get killed after a teamkill
+				std::string tkmessage = std::string("You killed teamate ") +
+				playerdata->callsign.c_str() +
+				std::string("! Don't do that again!") ;
+				bz_sendTextMessage(BZ_SERVER,data->killerID,tkmessage.c_str());
+			}
       }
       //free the records here
       bz_freePlayerRecord(playerdata);
@@ -80,11 +77,7 @@ void killmsg_events::process ( bz_EventData *eventData )
     }
 }
 
-
-
 //plugin by alezakos
-
-
 
 // Local Variables: ***
 // mode:C++ ***
@@ -93,4 +86,3 @@ void killmsg_events::process ( bz_EventData *eventData )
 // indent-tabs-mode: t ***
 // End: ***
 // ex: shiftwidth=2 tabstop=8
-
