@@ -51,10 +51,10 @@ void killmsg_events::process ( bz_EventData *eventData )
 		//now we create a message to send to the killer
 		std::string killermessage = std::string("You killed ") +
 		playerdata->callsign.c_str();
-		bz_sendTextMessage(BZ_SERVER,data->killerID,killermessage.c_str());
 
 			if(data->killerID==data->playerID && killmyself==1) 
 			{
+				//This kill is the kill you get after a teamkill...
 				killmyself=0;
 			}
 			else if(data->killerID==data->playerID) 
@@ -69,6 +69,11 @@ void killmsg_events::process ( bz_EventData *eventData )
 				playerdata->callsign.c_str() +
 				std::string("! Don't do that again!") ;
 				bz_sendTextMessage(BZ_SERVER,data->killerID,tkmessage.c_str());
+			}
+			else
+			{
+				//Send the first message if no TK or suicide
+				bz_sendTextMessage(BZ_SERVER,data->killerID,killermessage.c_str());
 			}
       }
       //free the records here
