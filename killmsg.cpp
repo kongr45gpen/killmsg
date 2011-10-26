@@ -4,77 +4,69 @@
 #include "bzfsAPI.h"
 #include "plugin_utils.h"
 
-BZ_GET_PLUGIN_VERSION
-
 bool killmyself = 0;
 bool triti=1; //getting killed if tked?
 
-// event handler callback
-class killmsg_events : public bz_EventHandler
+class killmsg : public bz_Plugin
 {
-public:
-  virtual void process ( bz_EventData *eventData );
+  virtual const char* Name (){return "killmsg Plugin";}
+  virtual void Init ( const char* config);
 
-  virtual bool autoDelete ( void ) { return false;} // this will be used for more then one event
+  virtual void Event ( bz_EventData *  eventData  );
 };
 
-killmsg_events killmsg_events;
-BZF_PLUGIN_CALL int bz_Load ( const char* commandLine )
+BZ_PLUGIN(killmsg)
+
+void killmsg::Init ( const char* commandLine )
 {
   bz_debugMessage(4,"killmsg plugin loaded");
   if(&commandLine[0]) triti=atoi(&commandLine[0]);
-  bz_registerEvent(bz_ePlayerDieEvent,&killmsg_events);
-  return 0;
+  Register(bz_ePlayerDieEvent);
+
+
 }
 
-BZF_PLUGIN_CALL int bz_Unload ( void )
-{
-  bz_debugMessage(4,"killmsg plugin unloaded");
-  bz_removeEvent(bz_ePlayerDieEvent,&killmsg_events);
-  return 0;
-}
-
-void killmsg_events::process ( bz_EventData *eventData )
+void killmsg::Event ( bz_EventData *eventData )
 {
     if(eventData->eventType==bz_ePlayerDieEvent)
     {
-      bz_PlayerDieEventData* data = (bz_PlayerDieEventData*)eventData;
+      bz_PlayerDieEventData_V1* data = (bz_PlayerDieEventData_V1*)eventData;
 
-      bz_PlayerRecord *playerdata; //create a playerrecord for the dead player.
+      bz_BasePlayerRecord *playerdata; //create a playerrecord for the dead player.
       playerdata = bz_getPlayerByIndex(data->playerID); //get data
 
-      bz_PlayerRecord *killerdata; //another playerrecord for the killer
+      bz_BasePlayerRecord *killerdata; //another playerrecord for the killer
       killerdata = bz_getPlayerByIndex(data->killerID); //get data
-      
+     
       if(killerdata&&playerdata)
       {
-		//now we create a message to send to the killer
-		std::string killermessage = std::string("You killed ") +
-		playerdata->callsign.c_str();
+                //now we create a message to send to the killer
+                std::string killermessage = std::string("You killed ") +
+                playerdata->callsign.c_str();
 
-			if(data->killerID==data->playerID && killmyself==1) 
-			{
-				//This kill is the kill you get after a teamkill...
-				killmyself=0;
-			}
-			else if(data->killerID==data->playerID) 
-			{
-				bz_sendTextMessage(BZ_SERVER,data->killerID,"You commited suicide! Don't do that again!");
-			}
-			else if(killerdata->team==playerdata->team && killerdata->team!=eRogueTeam) 
-			{
-				//Here we check whether the team was a team kill
-				if(triti)killmyself=1; //The plugin gets confused if you get killed after a teamkill
-				std::string tkmessage = std::string("You killed teamate ") +
-				playerdata->callsign.c_str() +
-				std::string("! Don't do that again!") ;
-				bz_sendTextMessage(BZ_SERVER,data->killerID,tkmessage.c_str());
-			}
-			else
-			{
-				//Send the first message if no TK or suicide
-				bz_sendTextMessage(BZ_SERVER,data->killerID,killermessage.c_str());
-			}
+                        if(data->killerID==data->playerID && killmyself==1)
+                        {
+                                //This kill is the kill you get after a teamkill...
+                                killmyself=0;
+                        }
+                        else if(data->killerID==data->playerID)
+                        {
+                                bz_sendTextMessage(BZ_SERVER,data->killerID,"You commited suicide! Don't do that again!");
+                        }
+                        else if(killerdata->team==playerdata->team && killerdata->team!=eRogueTeam)
+                        {
+                                //Here we check whether the kill was a team kill
+                                if(triti)killmyself=1; //The plugin gets confused if you get killed after a teamkill
+                                std::string tkmessage = std::string("You killed teamate ") +
+                                playerdata->callsign.c_str() +
+                                std::string("! Don't do that again!") ;
+                                bz_sendTextMessage(BZ_SERVER,data->killerID,tkmessage.c_str());
+                        }
+                        else
+                        {
+                                //Send the first message if no TK or suicide
+                                bz_sendTextMessage(BZ_SERVER,data->killerID,killermessage.c_str());
+                        }
       }
       //free the records here
       bz_freePlayerRecord(playerdata);
@@ -82,7 +74,7 @@ void killmsg_events::process ( bz_EventData *eventData )
     }
 }
 
-//plugin by alezakos
+// made by alezakos
 
 // Local Variables: ***
 // mode:C++ ***
@@ -91,3 +83,4 @@ void killmsg_events::process ( bz_EventData *eventData )
 // indent-tabs-mode: t ***
 // End: ***
 // ex: shiftwidth=2 tabstop=8
+
